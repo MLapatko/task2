@@ -7,6 +7,14 @@ public class VocalMusic extends Music {
     String wordsAuther;
     String singer;
     String accompaniment;
+
+    public VocalMusic(int id, String name, String composer, int time, String status, String wordsAuther, String singer, String accompaniment) {
+        super(id, name, composer, time, status);
+        this.wordsAuther = wordsAuther;
+        this.singer = singer;
+        this.accompaniment = accompaniment;
+    }
+
     @Override
     public void play(){
         System.out.println("The singer is singing");
@@ -28,22 +36,4 @@ public class VocalMusic extends Music {
         return accompaniment;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb=new StringBuilder();
-        sb.append("\n#############################")
-                .append("\nНазвание композиции = " )
-                .append(this.name)
-                .append("\nКомпозитор = ")
-                .append(this.composer )
-                .append("\nВремя = ")
-                .append(this.time)
-                .append("\nАвтор слов = ")
-                .append(this.wordsAuther)
-                .append("\nИсполнитель = ")
-                .append(this.singer)
-                .append("\nАккомпанемент = ")
-                .append(this.accompaniment);
-        return sb.toString();
-    }
 }

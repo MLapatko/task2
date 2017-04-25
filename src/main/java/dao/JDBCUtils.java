@@ -1,5 +1,6 @@
 package dao;
 
+import model.Chorus;
 import model.Solo;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -52,10 +53,8 @@ public class JDBCUtils {
         }
         return prop;
     }
-
-    public static JSONArray getSoloMusic(Connection conn) throws JSONException {
+    public static JSONArray getQueryResultSolo(String sql,Connection conn){
         JSONArray soloMusicJson =new JSONArray();
-        String sql = "select * from solo_music";
         PreparedStatement pstm = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -72,7 +71,7 @@ public class JDBCUtils {
                 String vocalType = rs.getString("vocal_type");
                 String accompaniment= rs.getString("accompaniment");
                 String status= rs.getString("disk");
-                Solo solo = new Solo(id,name,composer,time,wordsAuther,singer,accompaniment,vocalType,status);
+                Solo solo = new Solo(id,name,composer,time,status,wordsAuther,singer,accompaniment,vocalType);
                 soloMusicJson.put(mapper.writeValueAsString(solo));
             }
 
@@ -85,13 +84,30 @@ public class JDBCUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
+        System.out.println(soloMusicJson);
         return soloMusicJson;
+
     }
-    public static JSONArray getSoloMusicSortName(Connection conn) throws JSONException {
-        JSONArray soloMusicJson = new JSONArray();
-        String sql = "select * from solo_music ORDER BY name ASC";
+    public static JSONArray getSoloMusic(Connection conn,String table) throws JSONException {
+        String sql = "select * from " + table + "";
+        if (table.equals("solo_music")) {
+            return getQueryResultSolo(sql, conn);
+        }
+        else
+            return getQueryResultChorus(sql, conn);
+    }
+
+    public static JSONArray getMusicSortName(Connection conn,String table) throws JSONException {
+        String sql = "select * from "+table+" ORDER BY name ASC";
+        if (table.equals("solo_music")) {
+            return getQueryResultSolo(sql, conn);
+        }
+        else
+            return getQueryResultChorus(sql, conn);
+
+    }
+    public static JSONArray getQueryResultChorus(String sql,Connection conn){
+        JSONArray chorusMusicJson =new JSONArray();
         PreparedStatement pstm = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -105,13 +121,13 @@ public class JDBCUtils {
                 int time = rs.getInt("time");
                 String wordsAuther = rs.getString("words_auther");
                 String singer = rs.getString("singer");
-                String vocalType = rs.getString("vocal_type");
+                String chorusType = rs.getString("chorus_type");
+                System.out.println("type"+chorusType);
                 String accompaniment= rs.getString("accompaniment");
                 String status= rs.getString("disk");
-                Solo solo = new Solo(id,name,composer,time,wordsAuther,singer,accompaniment,vocalType,status);
-                soloMusicJson.put(mapper.writeValueAsString(solo));
+                Chorus chorus = new Chorus(id,name,composer,time,status,wordsAuther,singer,accompaniment,chorusType);
+                chorusMusicJson.put(mapper.writeValueAsString(chorus));
             }
-
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -122,30 +138,27 @@ public class JDBCUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println(chorusMusicJson);
+        return chorusMusicJson;
 
-
-        return soloMusicJson ;
     }
-   /* public static String colculateTime(Connection conn)  {
-
-        String sql = "SELECT CAST(t.time_sum/3600 AS VARCHAR(2))+ CAST(t.time_sum%3600/60 AS VARCHAR(2)) + ':' + CAST(((t.time_sum%3600)%60) AS VARCHAR(2)) AS totalTime FROM ( SELECT SUM(DATEDIFF(S, '00:00:00', time)) AS time_sum  FROM solo_music) t";
+    public static String calculateTime(Connection conn)  {
+        String sql = "SELECT SUM(totalTime) AS total from ((SELECT SUM(time)AS totalTime FROM solo_music WHERE disk='on') UNION (SELECT SUM(time) AS totalTime FROM chorus_music WHERE disk='on'))AS T";
         PreparedStatement pstm = null;
-        String totalTime="";
+        int totalTime=0;
         try {
             pstm = conn.prepareStatement(sql);
             ResultSet rs = pstm.executeQuery();
             rs.next();
-            totalTime=rs.getString(String.valueOf("totalTime"));
-
-            System.out.println("time=" + totalTime);
+            totalTime+=rs.getInt("total");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return totalTime;
-    }*/
-    public static JSONArray getSoloMusicSortSinger(Connection conn,String value) throws JSONException {
-        JSONArray soloMusicJson = new JSONArray();
-        String sql = "select id from solo_music WHERE singer='"+value+"'";
+        return String.valueOf(totalTime);
+    }
+    public static JSONArray getMusicSortSinger(Connection conn,String value) throws JSONException {
+        JSONArray musicJson = new JSONArray();
+        String sql = "(select id from solo_music WHERE singer='"+value+"')UNION (select id from chorus_music WHERE singer='"+value+"')";
         PreparedStatement pstm = null;
         try {
             pstm = conn.prepareStatement(sql);
@@ -155,18 +168,17 @@ public class JDBCUtils {
                 int id = rs.getInt("id");
                 JSONObject obj = new JSONObject();
                 obj.put("id", id);
-                System.out.println("obj"+obj.toString());
-                soloMusicJson.put(obj.toString());
+                musicJson.put(obj.toString());
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return soloMusicJson ;
+        System.out.println(musicJson.toString());
+        return musicJson ;
     }
-    public static void addToDisk(Connection conn,String id,String value){
-        String sql="UPDATE solo_music SET disk='"+value+"'  WHERE id = "+id+"";
+    public static void addToDisk(Connection conn,String id,String value,String table){
+        String sql="UPDATE "+table+" SET disk='"+value+"'  WHERE id = "+id+"";
         PreparedStatement pstm = null;
         try {
             pstm = conn.prepareStatement(sql);

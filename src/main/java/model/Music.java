@@ -45,16 +45,4 @@ public class Music implements Serializable{
         System.out.println("Music is playing");
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb=new StringBuilder();
-        sb.append("\n#############################")
-                .append("\nНазвание композиции = " )
-                .append(this.name)
-                .append("\nКомпозитор = ")
-                .append(this.composer )
-                .append("\nВремя = ")
-                .append(this.time);
-        return sb.toString();
-    }
 }

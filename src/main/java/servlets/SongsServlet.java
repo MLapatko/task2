@@ -20,16 +20,20 @@ public class SongsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Connection conn = JDBCUtils.getConnectionPool().checkOut();
+        String table;
         if(request.getParameter("actionType")!=null){
             System.out.println("action="+request.getParameter("actionType"));
             if(request.getParameter("actionType").equals("sort")){
-                String parameter=request.getParameter("parameter");
-              //  System.out.println(JDBCUtils.colculateTime(conn));
+                if(request.getParameter("id").equals("solo")){
+                    table="solo_music";
+                }
+                else{
+                    table="chorus_music";
+                }
                 try {
-
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(String.valueOf(JDBCUtils.getSoloMusicSortName(conn)));
+                    response.getWriter().write(String.valueOf(JDBCUtils.getMusicSortName(conn,table)));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -40,21 +44,32 @@ public class SongsServlet extends HttpServlet {
                 try {
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(String.valueOf((JDBCUtils.getSoloMusicSortSinger(conn,parameter))));
+                    response.getWriter().write(String.valueOf((JDBCUtils.getMusicSortSinger(conn,parameter))));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
             else if(request.getParameter("actionType").equals("showAll")) {
+                System.out.println("servlet");
+                if(request.getParameter("id").equals("#solo")){
+                    table="solo_music";
+                }
+                else{
+                    table="chorus_music";
+                }
                 try {
 
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(String.valueOf(JDBCUtils.getSoloMusic(conn)));
+                    response.getWriter().write(String.valueOf(JDBCUtils.getSoloMusic(conn,table)));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+            }
+            else if(request.getParameter("actionType").equals("calculateTime")) {
+                    response.getWriter().println(String.valueOf(JDBCUtils.calculateTime(conn)));
 
             }
         }
@@ -70,8 +85,15 @@ public class SongsServlet extends HttpServlet {
         Connection conn = JDBCUtils.getConnectionPool().checkOut();
         String val=request.getParameter("status");
         String id=request.getParameter("key");
-        System.out.println("key"+val);
-        JDBCUtils.addToDisk(conn,id,val);
+        String table;
+        if(request.getParameter("id").equals("solo")){
+            System.out.println("if block solo");
+            table="solo_music";
+        }
+        else{
+            table="chorus_music";
+        }
+        JDBCUtils.addToDisk(conn,id,val,table);
         PrintWriter printWriter  = response.getWriter();
         printWriter.println(val);
         printWriter.close();
