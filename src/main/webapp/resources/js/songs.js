@@ -51,6 +51,7 @@ $(document).ready(function () {
                         var value = JSON.parse(newData[prop]);
                         arr.push(value.id.toString());
                     }
+                    console.log(arr);
                     var $tr = $("tbody").find('.data');
                     console.log($tr);
                     $.each($tr, function(index) {
@@ -63,7 +64,7 @@ $(document).ready(function () {
             })
     });
 
-    $('.js-action-add-to-disk').on('click', function () {
+    $(document).on('click', '.js-action-add-to-disk', function () {
         var tableId=$(this).closest('table').attr('id');
         var self = $(this);
         var keyValue = self.attr('data-song-key');
@@ -89,7 +90,7 @@ $(document).ready(function () {
         });
     });
 
-    $('.js-action-delete-from-disk').on('click', function () {
+    $(document).on('click','.js-action-delete-from-disk', function () {
         var tableId=$(this).closest('table').attr('id');
         var self = $(this);
         var keyValue = self.attr('data-song-key');
@@ -104,9 +105,11 @@ $(document).ready(function () {
     });
     $('.js-action-sort-name').on('click', function () {
         var self = $(this);
+        console.log($("table"));
         var tables= $("table")
         Array.from(document.getElementsByClassName('display')).forEach(function (tabl) {
             var idTable=$(tabl).attr('id');
+
             $.ajax(location.href, {
                 method: 'get',
                 data: {parameter: "name", actionType: "sort",id: idTable},
@@ -125,6 +128,7 @@ $(document).ready(function () {
                         $('#'+idTable+' .data:eq('+key1+')').children('td[data-name]:eq(8)').text(value.status);
                         $('#'+idTable+' .data:eq('+key1+') .js-action-add-to-disk').attr('data-song-key', value.id);
                         $('#'+idTable+' .data:eq('+key1+') .js-action-delete-from-disk').attr('data-song-key', value.id);
+
                     });
                 }
             });

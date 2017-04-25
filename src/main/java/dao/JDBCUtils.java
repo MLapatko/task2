@@ -143,7 +143,8 @@ public class JDBCUtils {
 
     }
     public static String calculateTime(Connection conn)  {
-        String sql = "SELECT SUM(totalTime) AS total from ((SELECT SUM(time)AS totalTime FROM solo_music WHERE disk='on') UNION (SELECT SUM(time) AS totalTime FROM chorus_music WHERE disk='on'))AS T";
+        String sql = "SELECT SUM(totalTime) AS total from ((SELECT SUM(time)AS totalTime FROM solo_music WHERE disk='on') " +
+                "UNION (SELECT SUM(time) AS totalTime FROM chorus_music WHERE disk='on'))AS T";
         PreparedStatement pstm = null;
         int totalTime=0;
         try {
@@ -158,7 +159,8 @@ public class JDBCUtils {
     }
     public static JSONArray getMusicSortSinger(Connection conn,String value) throws JSONException {
         JSONArray musicJson = new JSONArray();
-        String sql = "(select id from solo_music WHERE singer='"+value+"')UNION (select id from chorus_music WHERE singer='"+value+"')";
+        String sql = "(select id from solo_music WHERE singer='"+value+"')UNION (select id from chorus_music WHERE " +
+                "singer='"+value+"')";
         PreparedStatement pstm = null;
         try {
             pstm = conn.prepareStatement(sql);

@@ -8,7 +8,8 @@ public class VocalMusic extends Music {
     String singer;
     String accompaniment;
 
-    public VocalMusic(int id, String name, String composer, int time, String status, String wordsAuther, String singer, String accompaniment) {
+    public VocalMusic(int id, String name, String composer, int time, String status, String wordsAuther, String singer,
+                      String accompaniment) {
         super(id, name, composer, time, status);
         this.wordsAuther = wordsAuther;
         this.singer = singer;

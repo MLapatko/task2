@@ -22,7 +22,6 @@ public class SongsServlet extends HttpServlet {
         Connection conn = JDBCUtils.getConnectionPool().checkOut();
         String table;
         if(request.getParameter("actionType")!=null){
-            System.out.println("action="+request.getParameter("actionType"));
             if(request.getParameter("actionType").equals("sort")){
                 if(request.getParameter("id").equals("solo")){
                     table="solo_music";
@@ -50,7 +49,6 @@ public class SongsServlet extends HttpServlet {
                 }
             }
             else if(request.getParameter("actionType").equals("showAll")) {
-                System.out.println("servlet");
                 if(request.getParameter("id").equals("#solo")){
                     table="solo_music";
                 }
@@ -87,7 +85,6 @@ public class SongsServlet extends HttpServlet {
         String id=request.getParameter("key");
         String table;
         if(request.getParameter("id").equals("solo")){
-            System.out.println("if block solo");
             table="solo_music";
         }
         else{

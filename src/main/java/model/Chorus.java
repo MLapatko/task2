@@ -18,7 +18,8 @@ public class Chorus extends VocalMusic {
         System.out.println("Chorus is singing");
     }
 
-    public Chorus(int id, String name, String composer, int time, String status, String wordsAuther, String singer, String accompaniment, String chorusType) {
+    public Chorus(int id, String name, String composer, int time, String status, String wordsAuther, String singer,
+                  String accompaniment, String chorusType) {
         super(id, name, composer, time, status, wordsAuther, singer, accompaniment);
         this.chorusType = chorusType;
     }
